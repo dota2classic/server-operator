@@ -21,7 +21,7 @@ def run_server(server_info: Dict[str, Any], game_mode: int) -> bool:
         server_info['path'], port, additional_config, game_map, game_mode)
 
 
-    # todo remove
+    # todo remove and async process
     return True
     # print(cmd)
     process = subprocess.Popen(cmd)

@@ -24,24 +24,21 @@
 #     public readonly info: MatchInfo,
 #   ) {}
 # }
-import json
 
 from aioredis import Redis
 
 from gs.run_server import run_server
-from servers import supported_servers
+from servers import find_server
 
 
 async def process_match_created_event(redis_queue: Redis, evt):
-    print("haha event goes brr")
-
-    for ip, p in supported_servers.items():  # for name, age in dictionary.iteritems():  (for Python 2.x)
-        if ip == evt['url']:
-            good = run_server(p, evt['info']['mode'])
-            if good:
-                await redis_queue.publish_json('GameServerStartedEvent', ({
-                    'matchId': evt['matchId'],
-                    'info': evt['info']
-                }))
-
-            break
+    print("Processing MatchCreatedEvent")
+    server = find_server(evt['url'])
+    good = run_server(server, evt['info']['mode'])
+    if good:
+        server['down_for'] = 0
+        del server['down_since']
+        await redis_queue.publish_json('GameServerStartedEvent', ({
+            'matchId': evt['matchId'],
+            'info': evt['info']
+        }))

@@ -1,5 +1,7 @@
+import datetime
 import json
 import asyncio as aio
+import time
 
 import aioredis
 import aioschedule as schedule
@@ -8,21 +10,24 @@ from gs.util import is_server_running
 from process.match_created import process_match_created_event
 from servers import supported_servers
 
-DOWN_CONFIRMED_THRESHOLD = 2
+# 10 secs
+DOWN_CONFIRMED_THRESHOLD = 10
 
 
 async def actualize_servers(redis_queue):
-    print('Actualizing server statuses')
     for ip, p in supported_servers.items():
         is_running = is_server_running(ip)
         if not is_running and supported_servers[ip]['down_for'] < DOWN_CONFIRMED_THRESHOLD:
-            supported_servers[ip]['down_for'] += 1
-            if supported_servers[ip]['down_for'] == DOWN_CONFIRMED_THRESHOLD:
-                await redis_queue.publish_json('GameServerStoppedEvent', {
-                    'url': ip,
-                    'version': 'Dota_681'
-                })
-    print(json.dumps(supported_servers))
+            if supported_servers[ip]['down_for'] == 0:
+                supported_servers[ip]['down_for'] = 1
+                supported_servers[ip]['down_since'] = time.time()
+            else:
+                supported_servers[ip]['down_for'] = time.time() - supported_servers[ip]['down_since']
+                if supported_servers[ip]['down_for'] >= DOWN_CONFIRMED_THRESHOLD:
+                    await redis_queue.publish_json('GameServerStoppedEvent', {
+                        'url': ip,
+                        'version': 'Dota_681'
+                    })
 
 
 async def handle_match_created(redis_queue):
