@@ -8,10 +8,11 @@ import aioschedule as schedule
 
 from gs.util import is_server_running
 from process.match_created import process_match_created_event
+from server import flask_app
 from servers import supported_servers
 
 # 10 secs
-DOWN_CONFIRMED_THRESHOLD = 10
+DOWN_CONFIRMED_THRESHOLD = 30
 
 
 async def actualize_servers(redis_queue):
@@ -51,6 +52,10 @@ async def checks(redis_queue):
         await aio.sleep(1)
 
 
+
+async def start_server():
+    flask_app.run(host='0.0.0.0', port = 5000)
+
 # export class GameServerStoppedEvent {
 #   constructor(
 #     public readonly url: string,
@@ -67,4 +72,5 @@ async def start():
 
 loop = aio.get_event_loop()
 loop.create_task(start())
+loop.create_task(start_server())
 loop.run_forever()
