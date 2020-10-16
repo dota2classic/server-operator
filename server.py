@@ -20,3 +20,13 @@ def update_game_state():
     return '', 200
 
 
+
+@flask_app.route('/finish_match', methods=['POST'])
+def update_game_state():
+    data = request.get_json()
+    flask_redis_queue.publish('MatchFinishedEvent', json.dumps({
+        'matchId': data['match_id']
+    }))
+    return '', 200
+
+
