@@ -6,6 +6,7 @@ import time
 import aioredis
 import aioschedule as schedule
 
+from config import REDIS_PORT, REDIS_HOST
 from gs.util import is_server_running
 from process.match_created import process_match_created_event
 from server import flask_app
@@ -40,7 +41,7 @@ async def handle_match_created(redis_queue):
 
 
 async def init_redis_queue():
-    redis_queue = await aioredis.create_redis_pool('redis://localhost:6379')
+    redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT) )
 
     return redis_queue
 
