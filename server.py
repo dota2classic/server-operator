@@ -3,9 +3,11 @@ import json
 from flask import Flask, request
 from redis import Redis
 
+from config import REDIS_HOST, REDIS_PORT
+
 flask_app = Flask(__name__)
 
-flask_redis_queue =  Redis('localhost', 6379)
+flask_redis_queue =  Redis(REDIS_HOST, REDIS_PORT)
 
 
 
@@ -22,7 +24,7 @@ def update_game_state():
 
 
 @flask_app.route('/finish_match', methods=['POST'])
-def update_game_state():
+def finish_match():
     data = request.get_json()
     flask_redis_queue.publish('MatchFinishedEvent', json.dumps({
         'matchId': data['match_id']

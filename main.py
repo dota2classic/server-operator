@@ -54,7 +54,7 @@ async def checks(redis_queue):
 
 
 async def start_server():
-    flask_app.run(host='0.0.0.0', port = 5000)
+    flask_app.run(host='0.0.0.0', port = 5001)
 
 # export class GameServerStoppedEvent {
 #   constructor(
