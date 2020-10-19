@@ -1,3 +1,4 @@
+import json
 import subprocess
 from threading import Timer
 from typing import Dict, Any
@@ -7,6 +8,7 @@ from gs.setup_source_tv import setup_source_tv
 
 
 def run_server(server_info: Dict[str, Any], game_mode: int) -> bool:
+    print(json.dumps(server_info))
     port: int = server_info['port']
     additional_config = ""
     game_map = "dota"

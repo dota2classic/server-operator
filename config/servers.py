@@ -9,9 +9,10 @@ with open("./serverlist.json") as json_file:
 
 
 def find_server(url):
+
     for ip, p in supported_servers.items():
         if ip == url:
-            return ip, url
+            return ip, p
     return None
 
 

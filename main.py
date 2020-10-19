@@ -15,6 +15,7 @@ DOWN_CONFIRMED_THRESHOLD = 30
 
 
 async def actualize_servers(redis_queue):
+    print("Actualizing server")
     for ip, p in supported_servers.items():
         is_running = is_server_running(ip)
         if not is_running and supported_servers[ip]['down_for'] < DOWN_CONFIRMED_THRESHOLD:
@@ -52,7 +53,6 @@ async def checks(redis_queue):
 
 
 
-
 # export class GameServerStoppedEvent {
 #   constructor(
 #     public readonly url: string,
@@ -63,7 +63,6 @@ async def checks(redis_queue):
 
 async def start():
     redis_queue = await init_redis_queue()
-    loop.create_task(start())
     loop.create_task(handle_match_created(redis_queue))
     loop.create_task(checks(redis_queue))
 

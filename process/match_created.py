@@ -33,11 +33,11 @@ from config.servers import find_server
 
 async def process_match_created_event(redis_queue: Redis, evt):
     print("Processing MatchCreatedEvent")
-    server = find_server(evt['url'])
+    ip, server = find_server(evt['url'])
     good = run_server(server, evt['info']['mode'])
     if good:
         server['down_for'] = 0
-        del server['down_since']
+        server.pop('down_since', None)
         await redis_queue.publish_json('GameServerStartedEvent', ({
             'matchId': evt['matchId'],
             'info': evt['info']
