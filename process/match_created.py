@@ -28,7 +28,7 @@
 from aioredis import Redis
 
 from gs.run_server import run_server
-from servers import find_server
+from config.servers import find_server
 
 
 async def process_match_created_event(redis_queue: Redis, evt):

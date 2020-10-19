@@ -1,4 +1,3 @@
-import datetime
 import json
 import asyncio as aio
 import time
@@ -6,11 +5,10 @@ import time
 import aioredis
 import aioschedule as schedule
 
-from config import REDIS_PORT, REDIS_HOST
+from config.config import REDIS_HOST, REDIS_PORT
 from gs.util import is_server_running
 from process.match_created import process_match_created_event
-from server import flask_app
-from servers import supported_servers
+from config.servers import supported_servers
 
 # 10 secs
 DOWN_CONFIRMED_THRESHOLD = 30
@@ -50,12 +48,10 @@ async def checks(redis_queue):
     schedule.every(3).seconds.do(actualize_servers, redis_queue)
     while True:
         await schedule.run_pending()
-        await aio.sleep(1)
+        await aio.sleep(1000)
 
 
 
-async def start_server():
-    flask_app.run(host='0.0.0.0', port = 5001)
 
 # export class GameServerStoppedEvent {
 #   constructor(
@@ -67,11 +63,11 @@ async def start_server():
 
 async def start():
     redis_queue = await init_redis_queue()
+    loop.create_task(start())
     loop.create_task(handle_match_created(redis_queue))
     loop.create_task(checks(redis_queue))
 
 
 loop = aio.get_event_loop()
 loop.create_task(start())
-loop.create_task(start_server())
 loop.run_forever()
