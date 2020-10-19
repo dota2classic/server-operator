@@ -11,7 +11,7 @@ from process.match_created import process_match_created_event
 from config.servers import supported_servers
 
 # 10 secs
-DOWN_CONFIRMED_THRESHOLD = 30
+DOWN_CONFIRMED_THRESHOLD = 5
 
 
 async def actualize_servers(redis_queue):
@@ -31,6 +31,18 @@ async def actualize_servers(redis_queue):
                     })
 
 
+async def server_discovery(redis_queue):
+    for ip, p in supported_servers.items():
+        print(json.dumps({
+            'url': ip,
+            'version': p['version']
+        }))
+        await redis_queue.publish_json('GameServerDiscoveredEvent', {
+            'url': ip,
+            'version': p['version']
+        })
+
+
 async def handle_match_created(redis_queue):
     channel = (await redis_queue.subscribe('GameSessionCreatedEvent'))[0]
 
@@ -38,6 +50,15 @@ async def handle_match_created(redis_queue):
         message = json.loads(await channel.get(encoding='utf-8'))
         await process_match_created_event(redis_queue, message['data'])
 
+
+async def handle_discovery_requested(redis_queue):
+    channel = (await redis_queue.subscribe('DiscoveryRequestedEvent'))[0]
+
+
+    while await channel.wait_message():
+        message = json.loads(await channel.get(encoding='utf-8'))
+        print(json.dumps(message))
+        await server_discovery(redis_queue)
 
 async def init_redis_queue():
     redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT) )
@@ -65,6 +86,8 @@ async def start():
     redis_queue = await init_redis_queue()
     loop.create_task(handle_match_created(redis_queue))
     loop.create_task(checks(redis_queue))
+    loop.create_task(server_discovery(redis_queue))
+    loop.create_task(handle_discovery_requested(redis_queue))
 
 
 loop = aio.get_event_loop()
