@@ -68,6 +68,6 @@ def finish_match():
 def match_results():
     # ok let's keep it simple and let plugin form json lul
     data = request.get_json()
-    flask_redis_queue.publish('MatchFinishedEvent', json.dumps(data))
+    flask_redis_queue.publish('GameResultsEvent', json.dumps(data))
     return '', 200
 
