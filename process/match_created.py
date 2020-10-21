@@ -33,12 +33,24 @@ from config.servers import find_server
 
 async def process_match_created_event(redis_queue: Redis, evt):
     print("Processing MatchCreatedEvent")
-    ip, server = find_server(evt['url'])
-    good = run_server(server, evt['info']['mode'])
-    if good:
-        server['down_for'] = 0
-        server.pop('down_since', None)
-        await redis_queue.publish_json('GameServerStartedEvent', ({
-            'matchId': evt['matchId'],
-            'info': evt['info']
-        }))
+    try:
+        ip, server = find_server(evt['url'])
+
+        good = run_server(server, evt['info']['mode'])
+
+        if good:
+            server['down_for'] = 0
+            server.pop('down_since', None)
+            await redis_queue.publish_json('GameServerStartedEvent', ({
+                'matchId': evt['matchId'],
+                'info': evt['info'],
+                'url': ip
+            }))
+        else:
+            await redis_queue.publish_json('GameServerNotStartedEvent', ({
+                'matchId': evt['matchId'],
+                'info': evt['info'],
+                'url': ip
+            }))
+    except ValueError:
+        print("There is no such server here, skipping")

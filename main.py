@@ -70,7 +70,7 @@ async def checks(redis_queue):
     schedule.every(3).seconds.do(actualize_servers, redis_queue)
     while True:
         await schedule.run_pending()
-        await aio.sleep(1000)
+        await aio.sleep(2)
 
 
 
@@ -93,3 +93,4 @@ async def start():
 loop = aio.get_event_loop()
 loop.create_task(start())
 loop.run_forever()
+
