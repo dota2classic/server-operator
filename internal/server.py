@@ -64,7 +64,7 @@ def finish_match():
 #   ) {}
 # }
 
-@flask_app.route('/finish_match', methods=['POST'])
+@flask_app.route('/match_results', methods=['POST'])
 def match_results():
     # ok let's keep it simple and let plugin form json lul
     data = request.get_json()

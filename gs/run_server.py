@@ -77,9 +77,6 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
 
 
     configure_server(ip, server_info, match_id, match_info)
-
-    # todo remove and async process
-    return True
     # print(cmd)
     process = subprocess.Popen(cmd)
     if game_mode == 1:
