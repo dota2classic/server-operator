@@ -11,7 +11,7 @@ from process.match_created import process_match_created_event
 from config.servers import supported_servers
 
 # 10 secs
-DOWN_CONFIRMED_THRESHOLD = 5
+DOWN_CONFIRMED_THRESHOLD = 30
 
 
 async def actualize_servers(redis_queue):
@@ -94,3 +94,4 @@ loop = aio.get_event_loop()
 loop.create_task(start())
 loop.run_forever()
 
+# is_server_running('glory.dota2classic.ru:27015')

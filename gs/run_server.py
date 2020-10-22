@@ -2,7 +2,7 @@ import json
 import subprocess
 from threading import Timer
 from typing import Dict, Any
-
+from gs.util import RCON_PASSWORD
 from gs import run_source_tv
 from gs.configure_server import configure_server
 from gs.setup_source_tv import setup_source_tv
@@ -71,8 +71,8 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     if game_mode == 1 or game_mode == 2:
         additional_config = "+exec server.cfg +tv_enable 1"
 
-    cmd = '%s/srcds.exe -console -maxplayers 14 -game dota -port %d +maxplayers 14 %s +map %s +dota_force_gamemode %d' % (
-        server_info['path'], port, additional_config, game_map, game_mode)
+    cmd = '%s/srcds.exe  -console -maxplayers 14 -game dota +rcon_password %s -port %d +maxplayers 14 %s +map %s +dota_force_gamemode %d' % (
+        server_info['path'], RCON_PASSWORD, port, additional_config, game_map, game_mode)
 
 
 
