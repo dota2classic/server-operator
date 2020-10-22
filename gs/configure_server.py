@@ -28,7 +28,7 @@ def load_match_info(ip: str, server_info: Dict[str, Any], match_id, match_info):
 
 def load_plugins(server_info: Dict[str, Any], plugins):
     for config in plugins:
-        shutil.copy('./plugins/%s' % config, '%s/dota/addons/sourcemod/plugins/%s' % (server_info['path'], config))
+        shutil.copy('./plugins/%s.smx' % config, '%s/dota/addons/sourcemod/plugins/%s.smx' % (server_info['path'], config))
 
 def configure_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info):
     clean_configurations(server_info)
