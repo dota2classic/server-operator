@@ -1,4 +1,5 @@
 import json
+import shutil
 from os import listdir, path, remove
 from typing import Dict, Any
 
@@ -25,6 +26,11 @@ def load_match_info(ip: str, server_info: Dict[str, Any], match_id, match_info):
     f.close()
 
 
+def load_plugins(server_info: Dict[str, Any], plugins):
+    for config in plugins:
+        shutil.copy('./plugins/%s' % config, '%s/dota/addons/sourcemod/plugins/%s' % (server_info['path'], config))
+
 def configure_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info):
     clean_configurations(server_info)
     load_match_info(ip, server_info, match_id, match_info)
+    load_plugins(server_info, ['matchrecorder_new', 'roll'])
