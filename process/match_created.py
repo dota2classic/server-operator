@@ -36,7 +36,7 @@ async def process_match_created_event(redis_queue: Redis, evt):
     try:
         ip, server = find_server(evt['url'])
 
-        good = run_server(server, evt['info']['mode'])
+        good = run_server(ip, server, evt['matchId'], evt['info'])
 
         if good:
             server['down_for'] = 0
