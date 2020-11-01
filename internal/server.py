@@ -3,11 +3,11 @@ import json
 from flask import Flask, request
 from redis import Redis
 
-from config.config import REDIS_HOST, REDIS_PORT
+from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 
 flask_app = Flask(__name__)
 
-flask_redis_queue = Redis(REDIS_HOST, REDIS_PORT)
+flask_redis_queue = Redis(REDIS_HOST, REDIS_PORT, password=REDIS_PASSWORD)
 
 
 

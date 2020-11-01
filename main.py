@@ -5,7 +5,7 @@ import time
 import aioredis
 import aioschedule as schedule
 
-from config.config import REDIS_HOST, REDIS_PORT
+from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 from gs.util import is_server_running
 from process.match_created import process_match_created_event
 from config.servers import supported_servers
@@ -41,6 +41,7 @@ async def server_discovery(redis_queue):
             'url': ip,
             'version': p['version']
         })
+        print("Released discovered event")
 
 
 async def handle_match_created(redis_queue):
@@ -57,13 +58,10 @@ async def handle_discovery_requested(redis_queue):
 
     while await channel.wait_message():
         message = json.loads(await channel.get(encoding='utf-8'))
+        print("Discovery requested")
         print(json.dumps(message))
         await server_discovery(redis_queue)
 
-async def init_redis_queue():
-    redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT) )
-
-    return redis_queue
 
 
 async def checks(redis_queue):
@@ -83,7 +81,7 @@ async def checks(redis_queue):
 
 
 async def start():
-    redis_queue = await init_redis_queue()
+    redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD )
     loop.create_task(handle_match_created(redis_queue))
     loop.create_task(checks(redis_queue))
     loop.create_task(server_discovery(redis_queue))
