@@ -20,7 +20,7 @@ def get_this_host():
 def is_server_running(ip):
     server = srcds.SourceRcon(get_this_host(), get_port(ip), RCON_PASSWORD)
     try:
-        res = server.rcon('status')
+        res = server.rcon('echo a')
         # todo: some check
         return True
     except Exception as e:
