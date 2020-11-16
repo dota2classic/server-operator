@@ -24,15 +24,12 @@
 #     public readonly info: MatchInfo,
 #   ) {}
 # }
-from threading import Timer
+import asyncio
 
 from aioredis import Redis
 
 from gs.run_server import run_server
 from config.servers import find_server
-
-async def game_server_started(redis_queue: Redis, name, evt):
-    await redis_queue.publish_json(name, evt)
 
 
 async def process_match_created_event(redis_queue: Redis, evt):
@@ -47,11 +44,14 @@ async def process_match_created_event(redis_queue: Redis, evt):
             server.pop('down_since', None)
 
 
-            Timer(5.0, game_server_started, (redis_queue, 'GameServerStartedEvent', {
+            await asyncio.sleep(5)
+            await redis_queue.publish_json('GameServerStartedEvent', ({
                 'matchId': evt['matchId'],
                 'info': evt['info'],
                 'url': ip
-            })).start()
+            }))
+
+
         else:
             await redis_queue.publish_json('GameServerNotStartedEvent', ({
                 'matchId': evt['matchId'],
