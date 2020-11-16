@@ -24,8 +24,6 @@ def is_server_running(ip):
         # todo: some check
         return True
     except Exception as e:
-        print(e)
-        print("wicked")
         return False
     finally:
         server.disconnect()
