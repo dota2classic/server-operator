@@ -3,7 +3,7 @@ import subprocess
 from threading import Timer
 from typing import Dict, Any
 from gs.util import RCON_PASSWORD
-from gs import run_source_tv
+from gs.run_source_tv import run_sourcetv_relay
 from gs.configure_server import configure_server
 from gs.setup_source_tv import setup_source_tv
 
@@ -82,6 +82,6 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     if game_mode == 1:
         setup_source_tv(server_info['path'], port)
         # noinspection PyTypeChecker
-        Timer(30.0, run_source_tv, (process, server_info['path'], port)).start()
+        Timer(30.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
 
     return True
