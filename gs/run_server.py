@@ -86,6 +86,6 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
         setup_source_tv(server_info['path'], port)
         # noinspection PyTypeChecker
         # Timer(30.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
-        Timer(1.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
+        Timer(10.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
 
     return True
