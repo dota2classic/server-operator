@@ -67,8 +67,11 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     game_map = get_map_for_mode(match_info['mode'])
     game_mode = get_game_mode_for_mode(match_info['mode'])
 
+    enable_tv = True
+    # enable_tv = game_mode == 1 or game_mode == 2
     # if it's all pick or captains mode we enable source TV
-    if game_mode == 1 or game_mode == 2:
+    # if game_mode == 1 or game_mode == 2:
+    if enable_tv:
         additional_config = "+exec server.cfg +tv_enable 1"
 
     cmd = '%s/srcds.exe  -console -maxplayers 14 -game dota +rcon_password %s -port %d +maxplayers 14 %s +map %s +dota_force_gamemode %d' % (
@@ -79,7 +82,7 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     configure_server(ip, server_info, match_id, match_info)
     # print(cmd)
     process = subprocess.Popen(cmd)
-    if game_mode == 1:
+    if enable_tv:
         setup_source_tv(server_info['path'], port)
         # noinspection PyTypeChecker
         Timer(30.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
