@@ -12,8 +12,7 @@ tv_maxclients 16 // max source tv clients
 tv_name Dota2Classic TV
 tv_delay 0 // delay in seconds for watching the game
 tv_port {} // source tv port
-rcon_password {}
 tv_autorecord 0 // automatically records every game
-tv_secret_code 0""".format(source_tv_port, RCON_PASSWORD)
+tv_secret_code 0""".format(source_tv_port)
     f.write(content)
     f.close()
