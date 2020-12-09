@@ -22,7 +22,7 @@ def get_map_for_mode(mode):
     if mode == 3:
         return 'dota_diretide_12'
 
-    return 'dota'
+    return 'dota_training'
 
 # export enum Dota_GameMode {
 #   ALLPICK = 1,
