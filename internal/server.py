@@ -35,6 +35,13 @@ def finish_match():
     return '', 200
 
 
+@flask_app.route('/live_match', methods=['POST'])
+def finish_match():
+    data = request.get_json()
+    flask_redis_queue.publish('LiveMatchUpdateEvent', json.dumps(data))
+    return '', 200
+
+
 
 # export interface PlayerInMatchDTO {
 #   readonly steam_id: string;
