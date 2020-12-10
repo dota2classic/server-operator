@@ -36,7 +36,7 @@ def finish_match():
 
 
 @flask_app.route('/live_match', methods=['POST'])
-def finish_match():
+def live_match():
     data = request.get_json()
     flask_redis_queue.publish('LiveMatchUpdateEvent', json.dumps(data))
     return '', 200
