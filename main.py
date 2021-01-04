@@ -8,6 +8,7 @@ import aioschedule as schedule
 
 from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 from gs.util import is_server_running
+from process.kill_requested import process_kill_requested_event
 from process.match_created import process_match_created_event
 from config.servers import supported_servers
 
@@ -42,6 +43,17 @@ async def server_discovery(redis_queue):
             'version': p['version']
         })
         print("Released discovered event")
+
+
+
+async def handle_kill_requested(redis_queue):
+    channel = (await redis_queue.subscribe('KillServerRequestedEvent'))[0]
+    async def reader(ch):
+        async for msg in ch.iter():
+            message = json.loads(msg)
+            await process_kill_requested_event(redis_queue, message['data'])
+
+    asyncio.get_running_loop().create_task(reader(channel))
 
 
 async def handle_match_created(redis_queue):
@@ -89,6 +101,7 @@ async def checks(redis_queue):
 async def start():
     redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD)
     loop.create_task(handle_match_created(redis_queue))
+    loop.create_task(handle_kill_requested(redis_queue))
     loop.create_task(checks(redis_queue))
     loop.create_task(server_discovery(redis_queue))
     loop.create_task(handle_discovery_requested(redis_queue))
