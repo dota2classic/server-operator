@@ -6,5 +6,4 @@ from aioredis import Redis
 async def process_kill_requested_event(redis_queue: Redis, evt):
     server_url = evt['url']
     ip, server = find_server(server_url)
-    print("need to kill %s" % ip)
-    # stop_server(server)
+    stop_server(server)
