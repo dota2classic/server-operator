@@ -28,4 +28,4 @@ def execute_rcon(ip, command):
         server.disconnect()
 
 def is_server_running(ip):
-    return execute_rcon('echo a')
+    return execute_rcon(ip, 'echo a')
