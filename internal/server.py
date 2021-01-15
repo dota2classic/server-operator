@@ -26,7 +26,7 @@ flask_redis_queue = Redis(REDIS_HOST, REDIS_PORT, password=REDIS_PASSWORD)
 
 
 @flask_app.route('/session_sync', methods=['POST'])
-def finish_match():
+def session_sync():
     data = request.get_json()
     flask_redis_queue.publish('ServerSessionSyncEvent', json.dumps(data))
     return '', 200
