@@ -19,6 +19,7 @@ def load_match_info(ip: str, server_info: Dict[str, Any], match_id, match_info):
         'radiant': [t['value'] for t in match_info['radiant']],
         'dire': [t['value'] for t in match_info['dire']],
         'server_url': ip,
+        'info': match_info,
         'mode': match_info['mode']
     }
 

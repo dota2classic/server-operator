@@ -55,6 +55,8 @@ async def process_match_created_event(redis_queue: Redis, evt):
             server.pop('down_since', None)
 
 
+
+            # todo: emit this from plugin maybe?
             await redis_queue.publish_json('GameServerStartedEvent', ({
                 'matchId': evt['matchId'],
                 'info': evt['info'],
