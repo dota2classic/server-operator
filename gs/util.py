@@ -17,13 +17,15 @@ def get_this_host():
     return host
 
 
-def is_server_running(ip):
+def execute_rcon(ip, command):
     server = srcds.SourceRcon(get_this_host(), get_port(ip), RCON_PASSWORD)
     try:
-        res = server.rcon('echo a')
-        # todo: some check
+        res = server.rcon(command)
         return True
     except Exception as e:
         return False
     finally:
         server.disconnect()
+
+def is_server_running(ip):
+    return execute_rcon('echo a')

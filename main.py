@@ -13,6 +13,8 @@ from process.match_created import process_match_created_event
 from config.servers import supported_servers
 
 # 10 secs
+from process.process_actualization_requested import process_actualization_requested
+
 DOWN_CONFIRMED_THRESHOLD = 10
 
 
@@ -68,6 +70,17 @@ async def handle_match_created(redis_queue):
 
 
 
+async def handle_actualization_requested(redis_queue):
+    channel = (await redis_queue.subscribe('ServerActualizationRequestedEvent'))[0]
+
+    async def reader(ch):
+        async for msg in ch.iter():
+            message = json.loads(msg)
+            await process_actualization_requested(redis_queue, message['data'])
+
+    asyncio.get_running_loop().create_task(reader(channel))
+
+
 
 async def handle_discovery_requested(redis_queue):
     channel = (await redis_queue.subscribe('DiscoveryRequestedEvent'))[0]
@@ -101,6 +114,9 @@ async def checks(redis_queue):
 async def start():
     redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD)
     loop.create_task(handle_match_created(redis_queue))
+
+    loop.create_task(handle_actualization_requested(redis_queue))
+
     loop.create_task(handle_kill_requested(redis_queue))
     loop.create_task(checks(redis_queue))
     loop.create_task(server_discovery(redis_queue))

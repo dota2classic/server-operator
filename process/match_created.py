@@ -30,6 +30,7 @@ from aioredis import Redis
 
 from gs.run_server import run_server
 from config.servers import find_server
+from gs.util import is_server_running
 
 
 async def process_match_created_event(redis_queue: Redis, evt):
@@ -37,6 +38,16 @@ async def process_match_created_event(redis_queue: Redis, evt):
     try:
         ip, server = find_server(evt['url'])
 
+        is_running = is_server_running(ip)
+
+        if is_running:
+            # we dont wanna start useless server
+            await redis_queue.publish_json('GameServerNotStartedEvent', ({
+                'matchId': evt['matchId'],
+                'info': evt['info'],
+                'url': ip
+            }))
+            return
         good = run_server(ip, server, evt['matchId'], evt['info'])
 
         if good:
