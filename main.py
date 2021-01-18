@@ -69,7 +69,6 @@ async def handle_match_created(redis_queue):
     asyncio.get_running_loop().create_task(reader(channel))
 
 
-
 async def handle_actualization_requested(redis_queue):
     channel = (await redis_queue.subscribe('ServerActualizationRequestedEvent'))[0]
 

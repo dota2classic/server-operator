@@ -32,6 +32,20 @@ def session_sync():
     return '', 200
 
 
+@flask_app.route('/report_did_not_load', methods=['POST'])
+def report_did_not_load():
+    data = request.get_json()
+
+    for p in data['players']:
+        flask_redis_queue.publish('PlayerNotLoadedEvent', json.dumps({
+            'matchId': data['matchId'],
+            'playerId': {
+                'value': p
+            }
+        }))
+    return '', 200
+
+
 #
 # @flask_app.route('/start_match', methods=['POST'])
 # def finish_match():
