@@ -116,6 +116,8 @@ async def handle_launch_command(redis_queue):
 
                 is_running = is_server_running(ip)
 
+                print("%d is running" % is_running)
+
 
                 if is_running:
                     await redis_queue.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
@@ -124,6 +126,7 @@ async def handle_launch_command(redis_queue):
 
                 good = run_server(ip, server, evt['matchId'], evt['info'])
 
+                print("%d is good" % good)
                 if good:
                     server['down_for'] = 0
                     server.pop('down_since', None)
