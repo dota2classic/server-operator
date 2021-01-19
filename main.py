@@ -171,7 +171,7 @@ async def start():
     # loop.create_task(handle_actualization_requested(redis_queue))
 
     # loop.create_task(handle_kill_requested(redis_queue))
-    # loop.create_task(checks(redis_queue))
+    loop.create_task(checks(redis_queue))
     # loop.create_task(server_discovery(redis_queue))
     loop.create_task(handle_discovery_requested(redis_queue))
 
