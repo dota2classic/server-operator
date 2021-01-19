@@ -168,11 +168,11 @@ async def start():
     redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD)
     loop.create_task(handle_launch_command(redis_queue))
 
-    loop.create_task(handle_actualization_requested(redis_queue))
+    # loop.create_task(handle_actualization_requested(redis_queue))
 
-    loop.create_task(handle_kill_requested(redis_queue))
-    loop.create_task(checks(redis_queue))
-    loop.create_task(server_discovery(redis_queue))
+    # loop.create_task(handle_kill_requested(redis_queue))
+    # loop.create_task(checks(redis_queue))
+    # loop.create_task(server_discovery(redis_queue))
     loop.create_task(handle_discovery_requested(redis_queue))
 
 
