@@ -110,6 +110,8 @@ async def handle_launch_command(redis_queue):
         async for msg in ch.iter():
             message = json.loads(msg)
             evt = message['data']
+            print("Received launch command on ")
+            print(evt)
 
             try:
                 ip, server = find_server(evt['url'])
