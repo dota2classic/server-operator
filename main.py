@@ -137,6 +137,12 @@ async def handle_launch_command(redis_queue):
                         'successful': True
                     }))
 
+                    await redis_queue.publish_json('GameServerStartedEvent', ({
+                        'matchId': evt['matchId'],
+                        'info': evt['info'],
+                        'url': ip
+                    }))
+
 
                 else:
                     await redis_queue.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
