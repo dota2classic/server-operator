@@ -26,6 +26,7 @@ def wrap_reply(orig_message, reply):
         "id": orig_message['id']
     }
 
+
 async def actualize_servers(redis_queue):
     for ip, p in supported_servers.items():
         is_running = is_server_running(ip)
@@ -50,9 +51,9 @@ async def server_discovery(redis_queue):
         })
 
 
-
 async def handle_kill_requested(redis_queue):
     channel = (await redis_queue.subscribe('KillServerRequestedEvent'))[0]
+
     async def reader(ch):
         async for msg in ch.iter():
             message = json.loads(msg)
@@ -84,18 +85,14 @@ async def handle_actualization_requested(redis_queue):
     asyncio.get_running_loop().create_task(reader(channel))
 
 
-
 async def handle_discovery_requested(redis_queue):
     channel = (await redis_queue.subscribe('DiscoveryRequestedEvent'))[0]
-
 
     async def reader(ch):
         async for msg in ch.iter():
             await server_discovery(redis_queue)
 
     asyncio.get_running_loop().create_task(reader(channel))
-
-
 
 
 async def handle_launch_command(redis_queue_asd):
@@ -124,7 +121,6 @@ async def handle_launch_command(redis_queue_asd):
                 is_running = is_server_running(ip)
 
                 print("%d is running" % is_running)
-
 
                 if is_running:
                     await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
@@ -156,7 +152,7 @@ async def handle_launch_command(redis_queue_asd):
             except ValueError:
                 print("There is no such server here, skipping")
 
-    asyncio.get_running_loop().create_task(reader(channel))
+    asyncio.ensure_future(reader(channel))
 
 
 async def checks(redis_queue):
@@ -164,7 +160,6 @@ async def checks(redis_queue):
     while True:
         await schedule.run_pending()
         await aio.sleep(2)
-
 
 
 # export class GameServerStoppedEvent {
