@@ -18,8 +18,6 @@ from process.process_actualization_requested import process_actualization_reques
 
 DOWN_CONFIRMED_THRESHOLD = 10
 
-
-
 loop = asyncio.get_event_loop()
 
 
@@ -61,68 +59,6 @@ async def server_discovery_inner(pub):
             'url': ip,
             'version': p['version']
         })
-
-
-async def handle_kill_requested(redis_queue):
-    channel = (await redis_queue.subscribe('KillServerRequestedEvent'))[0]
-
-    async def reader(ch):
-        async for msg in ch.iter():
-            message = json.loads(msg)
-            await process_kill_requested_event(redis_queue, message['data'])
-
-    asyncio.ensure_future(reader(channel))
-
-
-async def handle_match_created(redis_queue):
-    pass
-    # channel = (await redis_queue.subscribe('GameSessionCreatedEvent'))[0]
-    #
-    # async def reader(ch):
-    #     async for msg in ch.iter():
-    #         message = json.loads(msg)
-    #         await process_match_created_event(redis_queue, message['data'])
-    #
-    # asyncio.get_running_loop().create_task(reader(channel))
-
-
-async def handle_actualization_requested():
-    pub = await aioredis.create_redis(
-        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
-        password=REDIS_PASSWORD
-    )
-    sub = await aioredis.create_redis(
-        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
-        password=REDIS_PASSWORD
-    )
-
-    channel = (await sub.subscribe('ServerActualizationRequestedEvent'))[0]
-
-    async def reader(ch):
-        async for msg in ch.iter():
-            message = json.loads(msg)
-            await process_actualization_requested(message['data'])
-
-    asyncio.ensure_future(reader(channel))
-
-
-async def handle_discovery_requested():
-    pub = await aioredis.create_redis(
-        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
-        password=REDIS_PASSWORD
-    )
-    sub = await aioredis.create_redis(
-        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
-        password=REDIS_PASSWORD
-    )
-    channel = (await sub.subscribe('DiscoveryRequestedEvent'))[0]
-
-    async def reader(ch):
-        async for msg in ch.iter():
-            await server_discovery_inner(pub)
-
-    asyncio.ensure_future(reader(channel))
-
 
 
 async def launch_server(message, pub):
@@ -167,28 +103,6 @@ async def launch_server(message, pub):
     except:
         print("There is no such server here, skipping")
 
-async def handle_launch_command():
-    pub = await aioredis.create_redis(
-        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
-        password=REDIS_PASSWORD
-    )
-    sub = await aioredis.create_redis(
-        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
-        password=REDIS_PASSWORD
-    )
-    channel = (await sub.subscribe('LaunchGameServerCommand'))[0]
-
-    print("LaunchGameServerCommand subscribe")
-
-    async def reader(ch):
-        async for msg in ch.iter():
-            print("I read it !! ")
-            await launch_server(json.loads(msg), pub)
-            print("I PROCESSED IT YAHOOO")
-
-
-    loop.create_task(reader(channel))
-
 
 async def checks():
     pub = await aioredis.create_redis(
@@ -200,13 +114,31 @@ async def checks():
         await aio.sleep(5)
 
 
-# export class GameServerStoppedEvent {
-#   constructor(
-#     public readonly url: string,
-#     public readonly version: Dota2Version,
-#   ) {}
-# }
+async def discovery_reader(pub, ch):
+    print('Reading discovery')
+    async for msg in ch.iter():
+        await server_discovery_inner(pub)
 
+
+async def launch_reader(pub, ch):
+    print('Reading launch')
+    async for msg in ch.iter():
+        print("I read it !! ")
+        await launch_server(json.loads(msg), pub)
+        print("I PROCESSED IT YAHOOO")
+
+
+async def actualization_reader(ch):
+    print('Reading actualization')
+    async for msg in ch.iter():
+        message = json.loads(msg)
+        await process_actualization_requested(message['data'])
+
+
+async def kill_reader(pub, ch):
+    async for msg in ch.iter():
+        message = json.loads(msg)
+        await process_kill_requested_event(pub, message['data'])
 
 
 async def handle_events():
@@ -218,27 +150,18 @@ async def handle_events():
         'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
         password=REDIS_PASSWORD
     )
-    channel = (await sub.subscribe('LaunchGameServerCommand'))
+    [launch_channel, actual_channel, disc_channel, kill_channel] = (
+        await sub.subscribe('LaunchGameServerCommand', 'ServerActualizationRequestedEvent', 'DiscoveryRequestedEvent',
+                            'KillServerRequestedEvent'))
 
-    print("LaunchGameServerCommand subscribe")
-
-    async def reader(ch):
-        async for msg in ch.iter():
-            print("I read it !! ")
-            await launch_server(json.loads(msg), pub)
-            print("I PROCESSED IT YAHOOO")
-
-    loop.create_task(reader(channel))
+    loop.create_task(launch_reader(pub, launch_channel))
+    loop.create_task(actualization_reader(actual_channel))
+    loop.create_task(discovery_reader(pub, disc_channel))
+    loop.create_task(kill_reader(pub, kill_channel))
 
 
-
-
-
-loop.create_task(handle_actualization_requested())
 loop.create_task(checks())
-loop.create_task(server_discovery())
-loop.create_task(handle_discovery_requested())
-loop.create_task(handle_launch_command())
+loop.create_task(handle_events())
 
 asyncio.get_event_loop().run_forever()
 
