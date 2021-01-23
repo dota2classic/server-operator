@@ -19,6 +19,10 @@ from process.process_actualization_requested import process_actualization_reques
 DOWN_CONFIRMED_THRESHOLD = 10
 
 
+
+loop = asyncio.get_event_loop()
+
+
 def wrap_reply(orig_message, reply):
     return {
         'response': reply,
@@ -48,6 +52,10 @@ async def server_discovery():
         'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
         password=REDIS_PASSWORD
     )
+    await server_discovery_inner(pub)
+
+
+async def server_discovery_inner(pub):
     for ip, p in supported_servers.items():
         await pub.publish_json('GameServerDiscoveredEvent', {
             'url': ip,
@@ -111,7 +119,7 @@ async def handle_discovery_requested():
 
     async def reader(ch):
         async for msg in ch.iter():
-            await server_discovery(pub)
+            await server_discovery_inner(pub)
 
     asyncio.ensure_future(reader(channel))
 
@@ -179,7 +187,6 @@ async def handle_launch_command():
             print("I PROCESSED IT YAHOOO")
 
 
-    loop = asyncio.get_event_loop()
     loop.create_task(reader(channel))
 
 
@@ -190,7 +197,7 @@ async def checks():
     )
     while True:
         await actualize_servers(pub)
-        await aio.sleep(2)
+        await aio.sleep(5)
 
 
 # export class GameServerStoppedEvent {
@@ -221,13 +228,11 @@ async def handle_events():
             await launch_server(json.loads(msg), pub)
             print("I PROCESSED IT YAHOOO")
 
-    loop = asyncio.get_event_loop()
     loop.create_task(reader(channel))
 
 
 
 
-loop = asyncio.get_event_loop()
 
 loop.create_task(handle_actualization_requested())
 loop.create_task(checks())
