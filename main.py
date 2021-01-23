@@ -133,6 +133,7 @@ async def actualization_reader(ch):
     async for msg in ch.iter():
         print('Actualization...')
         message = json.loads(msg)
+        await aio.sleep(2)  # make space
         await process_actualization_requested(message['data'])
 
 
