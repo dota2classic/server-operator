@@ -181,6 +181,8 @@ async def start():
     # loop.create_task(server_discovery(redis_queue))
     # loop.create_task(handle_discovery_requested(redis_queue))
 
-asyncio.run(start())
+
+asyncio.get_event_loop().create_task(start())
+asyncio.get_event_loop().run_forever()
 
 # is_server_running('glory.dota2classic.ru:27015')
