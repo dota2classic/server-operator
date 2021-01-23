@@ -43,9 +43,13 @@ async def actualize_servers(redis_queue):
                     })
 
 
-async def server_discovery(redis_queue):
+async def server_discovery():
+    pub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
     for ip, p in supported_servers.items():
-        await redis_queue.publish_json('GameServerDiscoveredEvent', {
+        await pub.publish_json('GameServerDiscoveredEvent', {
             'url': ip,
             'version': p['version']
         })
@@ -74,23 +78,40 @@ async def handle_match_created(redis_queue):
     # asyncio.get_running_loop().create_task(reader(channel))
 
 
-async def handle_actualization_requested(redis_queue):
-    channel = (await redis_queue.subscribe('ServerActualizationRequestedEvent'))[0]
+async def handle_actualization_requested():
+    pub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
+    sub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
+
+    channel = (await sub.subscribe('ServerActualizationRequestedEvent'))[0]
 
     async def reader(ch):
         async for msg in ch.iter():
             message = json.loads(msg)
-            await process_actualization_requested(redis_queue, message['data'])
+            await process_actualization_requested(message['data'])
 
     asyncio.ensure_future(reader(channel))
 
 
-async def handle_discovery_requested(redis_queue):
-    channel = (await redis_queue.subscribe('DiscoveryRequestedEvent'))[0]
+async def handle_discovery_requested():
+    pub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
+    sub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
+    channel = (await sub.subscribe('DiscoveryRequestedEvent'))[0]
 
     async def reader(ch):
         async for msg in ch.iter():
-            await server_discovery(redis_queue)
+            await server_discovery(pub)
 
     asyncio.ensure_future(reader(channel))
 
@@ -138,7 +159,7 @@ async def launch_server(message, pub):
     except:
         print("There is no such server here, skipping")
 
-async def handle_launch_command(redis_queue_asd):
+async def handle_launch_command():
     pub = await aioredis.create_redis(
         'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
         password=REDIS_PASSWORD
@@ -162,11 +183,13 @@ async def handle_launch_command(redis_queue_asd):
     loop.create_task(reader(channel))
 
 
-async def checks(redis_queue):
-    schedule.every(3).seconds.do(actualize_servers, redis_queue)
-
+async def checks():
+    pub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
     while True:
-        await actualize_servers(redis_queue)
+        await actualize_servers(pub)
         await aio.sleep(2)
 
 
@@ -178,16 +201,38 @@ async def checks(redis_queue):
 # }
 
 
+
+async def handle_events():
+    pub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
+    sub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
+    channel = (await sub.subscribe('LaunchGameServerCommand'))
+
+    print("LaunchGameServerCommand subscribe")
+
+    async def reader(ch):
+        async for msg in ch.iter():
+            print("I read it !! ")
+            await launch_server(json.loads(msg), pub)
+            print("I PROCESSED IT YAHOOO")
+
+    loop = asyncio.get_event_loop()
+    loop.create_task(reader(channel))
+
 async def start():
-    redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD)
-    asyncio.ensure_future(handle_launch_command(redis_queue))
+    asyncio.ensure_future(handle_launch_command())
 
-    asyncio.ensure_future(handle_actualization_requested(redis_queue))
-    # asyncio.ensure_future()(handle_kill_requested(redis_queue))
+    asyncio.ensure_future(handle_actualization_requested())
+    # asyncio.ensure_future()(handle_kill_requested())
 
-    asyncio.ensure_future(checks(redis_queue))
-    asyncio.ensure_future(server_discovery(redis_queue))
-    asyncio.ensure_future(handle_discovery_requested(redis_queue))
+    asyncio.ensure_future(checks())
+    asyncio.ensure_future(server_discovery())
+    asyncio.ensure_future(handle_discovery_requested())
 
 
 asyncio.get_event_loop().create_task(start())

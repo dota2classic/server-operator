@@ -2,7 +2,7 @@ from config.servers import find_server
 from gs.util import is_server_running, execute_rcon
 
 
-async def process_actualization_requested(queue, event):
+async def process_actualization_requested(event):
     try:
         ip, server = find_server(event['url'])
 
