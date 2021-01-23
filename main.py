@@ -178,7 +178,7 @@ async def start():
     # asyncio.ensure_future(handle_kill_requested(redis_queue))
     # asyncio.ensure_future(checks(redis_queue))
     # asyncio.ensure_future(server_discovery(redis_queue))
-    asyncio.ensure_future(handle_discovery_requested(redis_queue))
+    # asyncio.ensure_future(handle_discovery_requested(redis_queue))
 
 
 asyncio.get_event_loop().create_task(start())
