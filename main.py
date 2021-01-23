@@ -117,26 +117,28 @@ async def checks():
 async def discovery_reader(pub, ch):
     print('Reading discovery')
     async for msg in ch.iter():
+        print('Discovery...')
         await server_discovery_inner(pub)
 
 
 async def launch_reader(pub, ch):
     print('Reading launch')
     async for msg in ch.iter():
-        print("I read it !! ")
+        print('Launch...')
         await launch_server(json.loads(msg), pub)
-        print("I PROCESSED IT YAHOOO")
 
 
 async def actualization_reader(ch):
     print('Reading actualization')
     async for msg in ch.iter():
+        print('Actualization...')
         message = json.loads(msg)
         await process_actualization_requested(message['data'])
 
 
 async def kill_reader(pub, ch):
     async for msg in ch.iter():
+        print('Kill...')
         message = json.loads(msg)
         await process_kill_requested_event(pub, message['data'])
 
