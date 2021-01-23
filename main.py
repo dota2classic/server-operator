@@ -160,7 +160,7 @@ async def handle_events():
     loop.create_task(kill_reader(pub, kill_channel))
 
 
-loop.create_task(checks())
+# loop.create_task(checks())
 loop.create_task(server_discovery())
 loop.create_task(handle_events())
 
