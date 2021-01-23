@@ -172,7 +172,7 @@ async def checks(redis_queue):
 
 async def start():
     redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD)
-    loop.create_task(handle_launch_command(redis_queue))
+    asyncio.ensure_future(handle_launch_command(redis_queue))
 
     # loop.create_task(handle_actualization_requested(redis_queue))
     #
@@ -181,9 +181,6 @@ async def start():
     # loop.create_task(server_discovery(redis_queue))
     # loop.create_task(handle_discovery_requested(redis_queue))
 
-
-loop = aio.get_event_loop()
-loop.create_task(start())
-loop.run_forever()
+asyncio.run(start())
 
 # is_server_running('glory.dota2classic.ru:27015')
