@@ -43,6 +43,7 @@ async def actualize_servers(redis_queue):
                         'url': ip,
                         'version': 'Dota_681'
                     })
+        await asyncio.sleep(1) # space for handling fast events
 
 
 async def server_discovery():
