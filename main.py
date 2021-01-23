@@ -166,6 +166,6 @@ async def handle_events():
 loop.create_task(server_discovery())
 loop.create_task(handle_events())
 
-asyncio.get_event_loop().run_forever()
+loop.run_forever()
 
 # is_server_running('glory.dota2classic.ru:27015')
