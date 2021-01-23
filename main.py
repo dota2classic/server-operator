@@ -224,18 +224,17 @@ async def handle_events():
     loop = asyncio.get_event_loop()
     loop.create_task(reader(channel))
 
-async def start():
-    asyncio.ensure_future(handle_launch_command())
-
-    asyncio.ensure_future(handle_actualization_requested())
-    # asyncio.ensure_future()(handle_kill_requested())
-
-    asyncio.ensure_future(checks())
-    asyncio.ensure_future(server_discovery())
-    asyncio.ensure_future(handle_discovery_requested())
 
 
-asyncio.get_event_loop().create_task(start())
+
+loop = asyncio.get_event_loop()
+
+loop.create_task(handle_actualization_requested())
+loop.create_task(checks())
+loop.create_task(server_discovery())
+loop.create_task(handle_discovery_requested())
+loop.create_task(handle_launch_command())
+
 asyncio.get_event_loop().run_forever()
 
 # is_server_running('glory.dota2classic.ru:27015')
