@@ -103,8 +103,16 @@ async def handle_discovery_requested(redis_queue):
 
 
 
-async def handle_launch_command(redis_queue):
-    channel = (await redis_queue.subscribe('LaunchGameServerCommand'))[0]
+async def handle_launch_command(redis_queue_asd):
+    pub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
+    sub = await aioredis.create_redis(
+        'redis://%s:%d' % (REDIS_HOST, REDIS_PORT),
+        password=REDIS_PASSWORD
+    )
+    channel = (await sub.subscribe('LaunchGameServerCommand'))[0]
 
     async def reader(ch):
         async for msg in ch.iter():
@@ -122,7 +130,7 @@ async def handle_launch_command(redis_queue):
 
 
                 if is_running:
-                    await redis_queue.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
+                    await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
                         'successful': False
                     }))
 
@@ -133,11 +141,11 @@ async def handle_launch_command(redis_queue):
                     server['down_for'] = 0
                     server.pop('down_since', None)
 
-                    await redis_queue.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
+                    await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
                         'successful': True
                     }))
 
-                    await redis_queue.publish_json('GameServerStartedEvent', ({
+                    await pub.publish_json('GameServerStartedEvent', ({
                         'matchId': evt['matchId'],
                         'info': evt['info'],
                         'url': ip
@@ -145,7 +153,7 @@ async def handle_launch_command(redis_queue):
 
 
                 else:
-                    await redis_queue.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
+                    await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
                         'successful': False
                     }))
             except ValueError:
