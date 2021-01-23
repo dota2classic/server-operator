@@ -131,7 +131,7 @@ async def launch_reader(pub, ch):
 async def actualization_reader(ch):
     print('Reading actualization')
     async for msg in ch.iter():
-        print('Actualization...')
+        # print('Actualization...')
         message = json.loads(msg)
         await aio.sleep(2)  # make space
         await process_actualization_requested(message['data'])
@@ -163,7 +163,7 @@ async def handle_events():
     loop.create_task(kill_reader(pub, kill_channel))
 
 
-# loop.create_task(checks())
+loop.create_task(checks())
 loop.create_task(server_discovery())
 loop.create_task(handle_events())
 
