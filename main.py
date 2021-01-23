@@ -59,7 +59,7 @@ async def handle_kill_requested(redis_queue):
             message = json.loads(msg)
             await process_kill_requested_event(redis_queue, message['data'])
 
-    asyncio.get_running_loop().create_task(reader(channel))
+    asyncio.ensure_future(reader(channel))
 
 
 async def handle_match_created(redis_queue):
@@ -82,7 +82,7 @@ async def handle_actualization_requested(redis_queue):
             message = json.loads(msg)
             await process_actualization_requested(redis_queue, message['data'])
 
-    asyncio.get_running_loop().create_task(reader(channel))
+    asyncio.ensure_future(reader(channel))
 
 
 async def handle_discovery_requested(redis_queue):
@@ -92,7 +92,7 @@ async def handle_discovery_requested(redis_queue):
         async for msg in ch.iter():
             await server_discovery(redis_queue)
 
-    asyncio.get_running_loop().create_task(reader(channel))
+    asyncio.ensure_future(reader(channel))
 
 
 async def handle_launch_command(redis_queue_asd):
@@ -174,12 +174,12 @@ async def start():
     redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD)
     asyncio.ensure_future(handle_launch_command(redis_queue))
 
-    # loop.create_task(handle_actualization_requested(redis_queue))
+    asyncio.ensure_future(handle_actualization_requested(redis_queue))
     #
-    # loop.create_task(handle_kill_requested(redis_queue))
-    # loop.create_task(checks(redis_queue))
-    # loop.create_task(server_discovery(redis_queue))
-    # loop.create_task(handle_discovery_requested(redis_queue))
+    asyncio.ensure_future(handle_kill_requested(redis_queue))
+    asyncio.ensure_future(checks(redis_queue))
+    asyncio.ensure_future(server_discovery(redis_queue))
+    asyncio.ensure_future(handle_discovery_requested(redis_queue))
 
 
 asyncio.get_event_loop().create_task(start())
