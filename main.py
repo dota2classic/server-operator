@@ -164,8 +164,9 @@ async def handle_launch_command(redis_queue_asd):
 
 async def checks(redis_queue):
     schedule.every(3).seconds.do(actualize_servers, redis_queue)
+
     while True:
-        await schedule.run_pending()
+        await actualize_servers(redis_queue)
         await aio.sleep(2)
 
 
@@ -179,13 +180,14 @@ async def checks(redis_queue):
 
 async def start():
     redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD)
-    asyncio.ensure_future(handle_launch_command(redis_queue))
+    asyncio.create_task(handle_launch_command(redis_queue))
 
-    asyncio.ensure_future(handle_actualization_requested(redis_queue))
-    asyncio.ensure_future(handle_kill_requested(redis_queue))
-    # asyncio.ensure_future(checks(redis_queue))
-    asyncio.ensure_future(server_discovery(redis_queue))
-    asyncio.ensure_future(handle_discovery_requested(redis_queue))
+    asyncio.create_task(handle_actualization_requested(redis_queue))
+    # asyncio.create_task(handle_kill_requested(redis_queue))
+
+    asyncio.create_task(checks(redis_queue))
+    asyncio.create_task(server_discovery(redis_queue))
+    asyncio.create_task(handle_discovery_requested(redis_queue))
 
 
 asyncio.get_event_loop().create_task(start())

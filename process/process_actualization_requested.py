@@ -18,6 +18,6 @@ async def process_actualization_requested(queue, event):
             # })
 
 
-    except ValueError:
+    except:
         pass
         # print("There is no such server here, skipping actualization check")
