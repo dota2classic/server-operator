@@ -110,12 +110,12 @@ async def handle_launch_command(redis_queue_asd):
 
     async def reader(ch):
         async for msg in ch.iter():
-            message = json.loads(msg)
-            evt = message['data']
-            print("Received launch command on ")
-            print(evt)
-
             try:
+                message = json.loads(msg)
+                evt = message['data']
+                print("Received launch command on ")
+                print(evt)
+
                 ip, server = find_server(evt['url'])
 
                 is_running = is_server_running(ip)
@@ -153,7 +153,7 @@ async def handle_launch_command(redis_queue_asd):
                 print("There is no such server here, skipping")
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(reader(channel))
+    loop.create_task(reader(channel))
 
 
 async def checks(redis_queue):
