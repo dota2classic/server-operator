@@ -174,11 +174,10 @@ async def start():
     redis_queue = await aioredis.create_redis_pool('redis://%s:%d' % (REDIS_HOST, REDIS_PORT), password=REDIS_PASSWORD)
     asyncio.ensure_future(handle_launch_command(redis_queue))
 
-    asyncio.ensure_future(handle_actualization_requested(redis_queue))
-    #
-    asyncio.ensure_future(handle_kill_requested(redis_queue))
-    asyncio.ensure_future(checks(redis_queue))
-    asyncio.ensure_future(server_discovery(redis_queue))
+    # asyncio.ensure_future(handle_actualization_requested(redis_queue))
+    # asyncio.ensure_future(handle_kill_requested(redis_queue))
+    # asyncio.ensure_future(checks(redis_queue))
+    # asyncio.ensure_future(server_discovery(redis_queue))
     asyncio.ensure_future(handle_discovery_requested(redis_queue))
 
 
