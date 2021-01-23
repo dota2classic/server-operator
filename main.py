@@ -44,15 +44,10 @@ async def actualize_servers(redis_queue):
 
 async def server_discovery(redis_queue):
     for ip, p in supported_servers.items():
-        print(json.dumps({
-            'url': ip,
-            'version': p['version']
-        }))
         await redis_queue.publish_json('GameServerDiscoveredEvent', {
             'url': ip,
             'version': p['version']
         })
-        print("Released discovered event")
 
 
 
@@ -113,6 +108,8 @@ async def handle_launch_command(redis_queue_asd):
         password=REDIS_PASSWORD
     )
     channel = (await sub.subscribe('LaunchGameServerCommand'))[0]
+
+    print("LaunchGameServerCommand subscribe")
 
     async def reader(ch):
         async for msg in ch.iter():
