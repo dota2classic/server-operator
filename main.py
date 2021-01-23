@@ -152,7 +152,8 @@ async def handle_launch_command(redis_queue_asd):
             except ValueError:
                 print("There is no such server here, skipping")
 
-    asyncio.ensure_future(reader(channel))
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(reader(channel))
 
 
 async def checks(redis_queue):
