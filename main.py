@@ -135,7 +135,7 @@ async def launch_server(message, pub):
             await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
                 'successful': False
             }))
-    except ValueError:
+    except:
         print("There is no such server here, skipping")
 
 async def handle_launch_command(redis_queue_asd):
@@ -155,6 +155,7 @@ async def handle_launch_command(redis_queue_asd):
         async for msg in ch.iter():
             print("I read it !! ")
             await launch_server(json.loads(msg), pub)
+            print("I PROCESSED IT YAHOOO")
 
 
     loop = asyncio.get_event_loop()
