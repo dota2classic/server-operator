@@ -44,6 +44,10 @@ def get_map_for_mode(mode):
 #   SOLOMID = 21,
 # }
 
+
+def do_enable_tv(mode):
+    return mode != 7
+
 def get_game_mode_for_mode(mode):
     if mode == 0 or mode == 1:
         return 1
@@ -68,7 +72,7 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     game_mode = get_game_mode_for_mode(match_info['mode'])
 
     # enable_tv = False
-    enable_tv = game_mode == 1 or game_mode == 2
+    enable_tv = do_enable_tv(match_info['mode'])
     # if it's all pick or captains mode we enable source TV
     # if game_mode == 1 or game_mode == 2:
     if enable_tv:
