@@ -46,6 +46,7 @@ def get_map_for_mode(mode):
 
 
 def do_enable_tv(mode):
+    return False
     return mode != 7
 
 def get_game_mode_for_mode(mode):
