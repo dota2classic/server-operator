@@ -2,6 +2,8 @@ import json
 import subprocess
 from threading import Timer
 from typing import Dict, Any
+
+from config.config import MOCK_LAUNCH
 from gs.util import RCON_PASSWORD
 from gs.run_source_tv import run_sourcetv_relay
 from gs.configure_server import configure_server
@@ -54,6 +56,8 @@ def get_game_mode_for_mode(mode):
         return 1
     elif mode == 2:
         return 21
+    elif mode == 9:
+        return 21
     elif mode == 3:
         return 7
     elif mode == 4:
@@ -66,6 +70,10 @@ def get_game_mode_for_mode(mode):
         return 1
 
 def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) -> bool:
+
+
+    if MOCK_LAUNCH:
+        return True
     print(json.dumps(server_info))
     port: int = server_info['port']
     additional_config = ""
