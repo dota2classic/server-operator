@@ -64,7 +64,7 @@ def get_game_mode_for_mode(mode):
         return 9
     elif mode == 5:
         return 18
-    elif mode == 6:
+    elif mode == 6 or mode == 10: # tournament 5x5 or captains mode
         return 2
     else:
         return 1
