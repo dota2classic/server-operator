@@ -26,7 +26,7 @@ flask_redis_queue = Redis(REDIS_HOST, REDIS_PORT, password=REDIS_PASSWORD)
 
 
 @flask_app.route('/steam_lag_report', methods=['POST'])
-def session_sync():
+def steam_lag_report():
     data = request.get_json()
     flask_redis_queue.publish('SteamLagReportedEvent', json.dumps(data))
     return '', 200
