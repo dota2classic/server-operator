@@ -89,7 +89,7 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     port: int = server_info['port']
     additional_config = ""
     game_map = get_map_for_mode(match_info['mode'], match_info['version'])
-    game_mode = get_game_mode_for_mode(match_info['mode'])
+    game_mode = get_game_mode_for_mode(match_info['mode'], match_info['version'])
 
     # enable_tv = False
     enable_tv = do_enable_tv(match_info['mode'])
