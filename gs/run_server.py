@@ -20,11 +20,14 @@ from gs.setup_source_tv import setup_source_tv
 #   TOURNAMENT = 6,
 # }
 
-def get_map_for_mode(mode):
+def get_map_for_mode(mode, version):
     if mode == 3:
         return 'dota_diretide_12'
 
-    return 'dota_training'
+    if version == 'Dota_681':
+        return 'dota_training'
+    elif version == 'Dota_684':
+        return 'dota'
 
 # export enum Dota_GameMode {
 #   ALLPICK = 1,
@@ -44,6 +47,7 @@ def get_map_for_mode(mode):
 #   ABILITY_DRAFT = 18,
 #
 #   SOLOMID = 21,
+#   RANKED_AP = 22
 # }
 
 
@@ -51,8 +55,15 @@ def do_enable_tv(mode):
     return True
     return mode != 7
 
-def get_game_mode_for_mode(mode):
-    if mode == 0 or mode == 1:
+def get_game_mode_for_mode(mode, version):
+    # ranked
+    if mode == 0:
+        if version == 'Dota_681':
+            return 1
+        elif version == 'Dota_684':
+            return 22
+    # unranked
+    if mode == 1:
         return 1
     elif mode == 2:
         return 21
@@ -77,7 +88,7 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     print(json.dumps(server_info))
     port: int = server_info['port']
     additional_config = ""
-    game_map = get_map_for_mode(match_info['mode'])
+    game_map = get_map_for_mode(match_info['mode'], match_info['version'])
     game_mode = get_game_mode_for_mode(match_info['mode'])
 
     # enable_tv = False
