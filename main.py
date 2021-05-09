@@ -10,7 +10,6 @@ from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 from gs.run_server import run_server
 from gs.util import is_server_running
 from process.kill_requested import process_kill_requested_event
-from process.match_created import process_match_created_event
 from config.servers import supported_servers, find_server
 
 # 10 secs
@@ -101,7 +100,8 @@ async def launch_server(message, pub):
             await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
                 'successful': False
             }))
-    except:
+    except Exception as e:
+        print(e)
         print("There is no such server here, skipping")
 
 
