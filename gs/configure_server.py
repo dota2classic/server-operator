@@ -36,4 +36,4 @@ def load_plugins(server_info: Dict[str, Any], plugins):
 def configure_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info):
     clean_configurations(server_info)
     load_match_info(ip, server_info, match_id, match_info)
-    load_plugins(server_info, ['matchrecorder_new', 'updater', 'roll'])
+    load_plugins(server_info, ['matchrecorder_new', 'updater', 'roll', 'bans'])
