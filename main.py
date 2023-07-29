@@ -63,7 +63,7 @@ async def server_discovery_inner(pub):
 
 
 async def launch_server(message, pub):
-#     try:
+    try:
         evt = message['data']
         print("Received launch command on ")
         print(evt)
@@ -101,9 +101,9 @@ async def launch_server(message, pub):
             await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
                 'successful': False
             }))
-#     except Exception as e:
-#         print(e)
-#         print("Error in launch_server, There is no such server here, skipping")
+    except Exception as e:
+        print(e)
+        print("Error in launch_server, There is no such server here, skipping")
 
 
 async def checks():
