@@ -62,47 +62,47 @@ async def server_discovery_inner(pub):
 
 
 async def launch_server(message, pub):
-    try:
-        evt = message['data']
-        print("Received launch command on ")
-        print(evt)
+#     try:
+    evt = message['data']
+    print("Received launch command on ")
+    print(evt)
 
-        ip, server = find_server(evt['url'])
+    ip, server = find_server(evt['url'])
 
-        is_running = is_server_running(ip)
+    is_running = is_server_running(ip)
 
-        print("%d is running" % is_running)
+    print("%d is running" % is_running)
 
-        if is_running:
-            await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
-                'successful': False
-            }))
+    if is_running:
+        await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
+            'successful': False
+        }))
 
-        good = run_server(ip, server, evt['matchId'], evt['info'])
+    good = run_server(ip, server, evt['matchId'], evt['info'])
 
-        print("%d is good" % good)
-        if good:
-            server['down_for'] = 0
-            server.pop('down_since', None)
+    print("%d is good" % good)
+    if good:
+        server['down_for'] = 0
+        server.pop('down_since', None)
 
-            await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
-                'successful': True
-            }))
+        await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
+            'successful': True
+        }))
 
-            await pub.publish_json('GameServerStartedEvent', ({
-                'matchId': evt['matchId'],
-                'info': evt['info'],
-                'url': ip
-            }))
+        await pub.publish_json('GameServerStartedEvent', ({
+            'matchId': evt['matchId'],
+            'info': evt['info'],
+            'url': ip
+        }))
 
 
-        else:
-            await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
-                'successful': False
-            }))
-    except Exception as e:
-        print(e)
-        print("Error in launch_server, There is no such server here, skipping")
+    else:
+        await pub.publish_json('LaunchGameServerCommand.reply', wrap_reply(message, {
+            'successful': False
+        }))
+#     except Exception as e:
+#         print(e)
+#         print("Error in launch_server, There is no such server here, skipping")
 
 
 async def checks():
