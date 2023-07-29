@@ -102,7 +102,7 @@ async def launch_server(message, pub):
             }))
     except Exception as e:
         print(e)
-        print("There is no such server here, skipping")
+        print("Error in launch_server, There is no such server here, skipping")
 
 
 async def checks():

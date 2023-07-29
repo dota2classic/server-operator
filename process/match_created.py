@@ -71,4 +71,4 @@ async def process_match_created_event(redis_queue: Redis, evt):
                 'url': ip
             }))
     except ValueError:
-        print("There is no such server here, skipping")
+        print("Error in match_created_event, There is no such server here, skipping")
