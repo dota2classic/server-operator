@@ -124,10 +124,9 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
 
     configure_server(ip, server_info, match_id, match_info)
 
-    print(path)
-    print(cmd)
+    fullcmd = [path] + cmd.split(' ')
     # print(cmd)
-    process = subprocess.Popen([path, cmd])
+    process = subprocess.Popen(fullcmd)
     if enable_tv:
         # noinspection PyTypeChecker
         # Timer(30.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
