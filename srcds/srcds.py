@@ -84,7 +84,6 @@ class SourceRcon(object):
             self.tcp.setblocking(1)
             self.tcp.connect((self.host, self.port))
         except socket.error as msg:
-            print(msg)
             raise SourceRconError(
                 'Disconnected from RCON, please restart program to continue.')
 
