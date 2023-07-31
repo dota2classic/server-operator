@@ -102,8 +102,8 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     game_mode = get_game_mode_for_mode(
         match_info['mode'], match_info['version'])
 
-    enable_tv = False
-    # enable_tv = do_enable_tv(match_info['mode'])
+#     enable_tv = False
+    enable_tv = do_enable_tv(match_info['mode'])
 
     # if it's all pick or captains mode we enable source TV
     # if game_mode == 1 or game_mode == 2:
