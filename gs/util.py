@@ -20,12 +20,10 @@ def get_this_host():
 
 def execute_rcon(ip, command):
     server = srcds.SourceRcon(get_this_host(), get_port(ip), RCON_PASSWORD, 5)
-    print(get_this_host(), get_port(ip))
     try:
         res = server.rcon(command)
         return True
     except Exception as e:
-        print(e)
         return False
     finally:
         server.disconnect()
