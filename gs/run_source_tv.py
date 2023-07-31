@@ -23,5 +23,8 @@ def run_sourcetv_relay(main_process: subprocess.Popen, path: str, game_port: int
 
     relay_process = subprocess.Popen(fullcmd)
     # after main process is finished kill relay
+    print("Waiting for main_process to finish...")
     main_process.communicate()
+
+    print("MAIN process died, kill relay!")
     relay_process.kill()
