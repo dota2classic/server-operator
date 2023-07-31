@@ -9,6 +9,14 @@ def get_srcds_path():
     elif platform.system() == "Windows":
         return "srcds.exe"
 
+
+def hard_kill(process):
+    import os
+    if os.name == 'nt':  # windows
+        subprocess.Popen("TASKKILL /F /PID {pid} /T".format(pid=process.pid))
+    else:
+        os.kill(process.pid, signal.SIGTERM)
+
 def run_sourcetv_relay(main_process: subprocess.Popen, path: str, game_port: int):
     relay_port = game_port + 5
     tv_port = game_port + 4
@@ -27,4 +35,5 @@ def run_sourcetv_relay(main_process: subprocess.Popen, path: str, game_port: int
     main_process.communicate()
 
     print("MAIN process died, kill relay!")
-    relay_process.terminate()
+    hard_kill(relay_process)
+#     relay_process.terminate()
