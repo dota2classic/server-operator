@@ -130,7 +130,7 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     if enable_tv:
         # noinspection PyTypeChecker
         # Timer(30.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
-        Timer(15.0, run_sourcetv_relay,
+        Timer(5.0, run_sourcetv_relay,
               (process, server_info['path'], port)).start()
 
     return True
