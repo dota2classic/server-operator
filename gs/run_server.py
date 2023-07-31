@@ -55,6 +55,7 @@ def do_enable_tv(mode):
     return True
     return mode != 7
 
+
 def get_game_mode_for_mode(mode, version):
     # ranked
     if mode == 0:
@@ -75,36 +76,52 @@ def get_game_mode_for_mode(mode, version):
         return 9
     elif mode == 5:
         return 18
-    elif mode == 6 or mode == 10: # tournament 5x5 or captains mode
+    elif mode == 6 or mode == 10:  # tournament 5x5 or captains mode
         return 2
     else:
         return 1
 
+
+def get_srcds_path():
+    import platform
+    if platform.system() == "Linux":
+        return "srcds.sh"
+
+    elif platform.system() == "Windows":
+        return "srcds.exe"
+
+
 def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) -> bool:
-
-
     if MOCK_LAUNCH:
         return True
+
     print(json.dumps(server_info))
     port: int = server_info['port']
     additional_config = ""
     game_map = get_map_for_mode(match_info['mode'], match_info['version'])
-    game_mode = get_game_mode_for_mode(match_info['mode'], match_info['version'])
+    game_mode = get_game_mode_for_mode(
+        match_info['mode'], match_info['version'])
 
-    # enable_tv = False
-    enable_tv = do_enable_tv(match_info['mode'])
+    enable_tv = False
+    # enable_tv = do_enable_tv(match_info['mode'])
+
     # if it's all pick or captains mode we enable source TV
     # if game_mode == 1 or game_mode == 2:
     if enable_tv:
         additional_config = "+exec server.cfg +tv_enable 1"
         setup_source_tv(server_info['path'], port)
 
-    cmd = '%s/srcds.exe  -console -maxplayers 14 -game dota +rcon_password %s -port %d +maxplayers 14 %s +map %s +dota_force_gamemode %d' % (
-        server_info['path'], RCON_PASSWORD, port, additional_config, game_map, game_mode)
+    cmd = '%s/%s -usercon -console -maxplayers 14 -game dota +rcon_password %s +ip 0.0.0.0 -port %d +maxplayers 14 %s +map %s ' % (
+        server_info['path'],
+        get_srcds_path(),
+        RCON_PASSWORD,
+        port,
+        additional_config,
+        game_map
+    )
+
     # cmd = '%s/srcds.exe  -console -maxplayers 14 -game dota -port %d +maxplayers 14 %s +map %s +dota_force_gamemode %d' % (
     #     server_info['path'], port, additional_config, game_map, game_mode)
-
-
 
     configure_server(ip, server_info, match_id, match_info)
     # print(cmd)
@@ -112,6 +129,7 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     if enable_tv:
         # noinspection PyTypeChecker
         # Timer(30.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
-        Timer(15.0, run_sourcetv_relay, (process, server_info['path'], port)).start()
+        Timer(15.0, run_sourcetv_relay,
+              (process, server_info['path'], port)).start()
 
     return True
