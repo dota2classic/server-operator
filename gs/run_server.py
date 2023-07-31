@@ -112,11 +112,12 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
         setup_source_tv(server_info['path'], port)
 
     path = '%s/%s' % (server_info['path'], get_srcds_path())
-    cmd = '-usercon -console -maxplayers 14 -game dota +rcon_password %s +ip 0.0.0.0 -port %d +maxplayers 14 %s +map %s ' % (
+    cmd = '-usercon -console -maxplayers 14 -game dota +rcon_password %s +ip 0.0.0.0 -port %d +maxplayers 14 %s +map %s +dota_force_gamemode %d' % (
         RCON_PASSWORD,
         port,
         additional_config,
-        game_map
+        game_map,
+        game_mode
     )
 
     # cmd = '%s/srcds.exe  -console -maxplayers 14 -game dota -port %d +maxplayers 14 %s +map %s +dota_force_gamemode %d' % (
