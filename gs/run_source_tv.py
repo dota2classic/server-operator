@@ -12,6 +12,7 @@ def get_srcds_path():
 
 def hard_kill(process):
     import os
+    import signal
     if os.name == 'nt':  # windows
         subprocess.Popen("TASKKILL /F /PID {pid} /T".format(pid=process.pid))
     else:
