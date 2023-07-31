@@ -123,6 +123,9 @@ def run_server(ip: str, server_info: Dict[str, Any], match_id: int, match_info) 
     #     server_info['path'], port, additional_config, game_map, game_mode)
 
     configure_server(ip, server_info, match_id, match_info)
+
+    print(path)
+    print(cmd)
     # print(cmd)
     process = subprocess.Popen([path, cmd])
     if enable_tv:
