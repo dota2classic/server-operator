@@ -26,7 +26,7 @@
 # }
 import asyncio
 
-from aioredis import Redis
+from redis import Redis
 
 from gs.run_server import run_server
 from config.servers import find_server

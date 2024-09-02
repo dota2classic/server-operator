@@ -98,9 +98,10 @@ def live_match():
 # export class GameResultsEvent {
 #   constructor(
 #     public readonly matchId: number,
-#     public readonly radiantWin: boolean,
+#     public readonly winner: DotaTeam,
 #     public readonly duration: number,
 #     public readonly type: MatchmakingMode,
+#     public readonly gameMode: Dota_GameMode,
 #     public readonly timestamp: number,
 #     public readonly server: string,
 #     public readonly players: PlayerInMatchDTO[],

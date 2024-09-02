@@ -2,7 +2,7 @@ import asyncio
 import json
 import asyncio as aio
 
-import aioredis
+from redis import asyncio as aioredis
 
 from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 

@@ -2,8 +2,7 @@ import asyncio
 import json
 import asyncio as aio
 import time
-
-import aioredis
+from redis import asyncio as aioredis
 import aioschedule as schedule
 
 from config.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
